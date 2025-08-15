@@ -1,0 +1,1 @@
+- add cover image
