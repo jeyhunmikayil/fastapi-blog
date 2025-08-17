@@ -1,6 +1,7 @@
 # crud/posts.py
 from sqlalchemy.orm import Session
 from app.models.post import Post
+from app.models.category import Category
 from app.schemas.post import PostCreate
 from slugify import slugify
 from fastapi import HTTPException, status
@@ -12,10 +13,25 @@ def get_posts(db: Session):
     return db.query(Post).all()
 
 def create_post(post: PostCreate, db: Session):
+    
+    DEFAULT_CATEGORY_ID = 1
+    
+    # set to category named "Uncategorized" if not defined specifically
+    category_id = post.category_id or DEFAULT_CATEGORY_ID
+
+    
+    # validate if category exists
+    category = db.get(Category, category_id)
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_404_BAD_REQUEST,
+                            detail="Category not found"
+                            )  
     db_post = Post(
         title=post.title,
         content=post.content,
-        slug=slugify(post.title)
+        slug=slugify(post.title),
+        category_id=category_id
     )
     db.add(db_post)
     db.commit()

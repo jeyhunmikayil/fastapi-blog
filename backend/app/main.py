@@ -37,6 +37,11 @@ app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(upload.router, prefix="/upload", tags=["Uploads"])
 app.include_router(categories.router, prefix="/categories", tags=["Categories"])
 
+@app.get("/")
+def read_home():
+    return {
+        "message":"Homepage Works"
+    }
 
 from app.core.openapi import custom_openapi
 app.openapi = lambda: custom_openapi(app)
